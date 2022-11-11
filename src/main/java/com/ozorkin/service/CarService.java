@@ -1,29 +1,30 @@
 package com.ozorkin.service;
 
 import com.ozorkin.model.Car;
+import com.ozorkin.model.Color;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class CarService {
-    private final String[] mColors = {
-            "light blue",
-            "dark blue",
-            "mauve",
-            "red",
-            "orange",
-            "lavender",
-            "purple",
-            "aqua",
-            "green",
-            "mustard",
-            "dark gray",
-            "pink",
-            "light gray",
-    };
     Random random = new Random();
     public  Car  create() {
         Car car = new Car();
+        car.setManufacturer(createString());
+        car.setEngine(createString());
+        car.setColor(getRandomColor());
+        car.setPrice(random.nextInt(0,10000));
+        car.setCount(1);
+        return  car;
+    }
+
+    private Color getRandomColor() {
+        final Color[] values = Color.values();
+        final int randomIndex = random.nextInt(values.length);
+        return values[randomIndex];
+    }
+
+
+    private String createString() {
         StringBuilder sb = new StringBuilder();
         int stringLength  = random.nextInt(1,10);
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -32,23 +33,8 @@ public class CarService {
             char randomChar = alphabet.charAt(random.nextInt(alphabet.length()));
             sb.append(randomChar);
         }
-        car.setManufacturer(sb.toString());
 
-        sb.delete(0,sb.length());
-
-        int engineStringLenght = random.nextInt(alphabet.length());
-        for (int i = 0; i < engineStringLenght; i++) {
-            char randomChar = alphabet.charAt(random.nextInt(alphabet.length()));
-            sb.append(randomChar);
-        }
-        car.setEngine(sb.toString());
-
-        int randomColor = random.nextInt(mColors.length);
-        car.setColor(mColors[randomColor]);
-        car.setPrice(random.nextInt(0,10000));
-        car.setCount(1);
-
-        return  car;
+        return sb.toString();
     }
 
     public  void print(Car car) {
