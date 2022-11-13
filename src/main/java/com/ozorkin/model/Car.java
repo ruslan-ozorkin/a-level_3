@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Car {
     private String manufacturer;
-    private String  engine;
+    private Engine  engine;
     private Color  color;
     private  int count;
     private  int price;
@@ -19,11 +19,12 @@ public class Car {
         this.manufacturer = manufacturer;
     }
 
-    public String getEngine() {
+    public Engine getEngine() {
         return engine;
     }
 
-    public void setEngine(String engine) {
+    public void setEngine(Engine engine) {
+
         this.engine = engine;
     }
 
@@ -55,7 +56,7 @@ public class Car {
 
     }
 
-    public Car(String manufacturer, String engine, Color color) {
+    public Car(String manufacturer, Engine engine, Color color) {
         this.manufacturer = manufacturer;
         this.engine = engine;
         this.color = color;
