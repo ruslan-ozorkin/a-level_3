@@ -4,12 +4,14 @@ import com.ozorkin.model.Car;
 import com.ozorkin.model.Color;
 import com.ozorkin.model.Engine;
 import com.ozorkin.repository.CarRepository;
+import com.ozorkin.util.RandomGenerator;
 
 import java.util.Arrays;
 import java.util.Random;
 
 public class CarService {
     private final CarRepository carArrayRepository;
+    public final RandomGenerator randomGenerator = new RandomGenerator();
 
     private final Random random = new Random();
 
@@ -17,10 +19,16 @@ public class CarService {
         this.carArrayRepository = carArrayRepository;
     }
 
-    public void create(final int count) {
-        for (int i = 0; i < count; i++) {
-            create();
+    public int create(RandomGenerator randomGenerator) {
+        final int count = randomGenerator.generate();
+        if (count==0) {
+            return -1;
         }
+        for (int i = 0; i < count; i++) {
+            Car car = create();
+            print(car);
+        }
+        return count;
     }
     public void insert(int index, final Car car) {
 

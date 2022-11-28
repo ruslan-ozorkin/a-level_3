@@ -13,16 +13,16 @@ public class Main {
         final Car car1 = carService.create();
         Car car2= new Car("FORD",new Engine(100,"balance"),Color.DARK_BLUE,"PPPPPPP");
 
-        carService.create(3);
-        carService.printAll();
-        carService.insert(0,car2);
-        carService.printAll();
-
-        final Car[] all = carService.getAll();
-        for (Car cars: all ) {
-            carService.print(cars);
-            CarService.check(cars);
-        }
+        carService.create(carService.randomGenerator);
+//        carService.printAll();
+//        carService.insert(0,car2);
+//        carService.printAll();
+//
+//        final Car[] all = carService.getAll();
+//        for (Car cars: all ) {
+//            carService.print(cars);
+//            CarService.check(cars);
+//        }
 
 
     }
