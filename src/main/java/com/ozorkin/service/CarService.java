@@ -47,11 +47,12 @@ public class CarService {
             PassengerCar passengerCar = new PassengerCar();
             passengerCar.setPassengerCount(randomGenerator.generate());
             return passengerCar;
-        } else {
+        } else  if (type.equals(Type.TRUCK)){
             Truck truck = new Truck();
             truck.setLoadCapacity(randomGenerator.generate());
             return truck;
         }
+        return null;
     }
 
     public boolean carEquals(Car firstCar, Car secondCar) {
