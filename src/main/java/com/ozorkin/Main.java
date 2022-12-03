@@ -12,9 +12,6 @@ public class Main {
           carService.createCustomCar(Type.TRUCK,"TT",(new Engine(100,"Q")),Color.GREEN,"12345");
           carService.createCustomCar(Type.TRUCK,"TT",(new Engine(100,"Q")),Color.GREEN,"12345");
           carService.createCustomCar(Type.CAR,"ANOTHER",(new Engine(100,"Q")),Color.GREEN,"12345");
-          for (Car cars : carService.getAll()) {
-              cars.randomRestore();
-          }
 
           final Car[] cars = carService.getAll();
           carService.print(cars[0]);

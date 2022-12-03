@@ -25,7 +25,6 @@ public class CarService {
         car.setColor(getRandomColor());
         car.setPrice(random.nextInt(0, 10000));
         car.setCount(1);
-        car.randomRestore();
         car.setType(type);
         return car;
     }
@@ -45,9 +44,14 @@ public class CarService {
 
     private Car createCarType(Type type) {
         if (type.equals(Type.CAR)) {
-            return new PassengerCar();
-        } else
-            return new Truck();
+            PassengerCar passengerCar = new PassengerCar();
+            passengerCar.setPassengerCount(randomGenerator.generate());
+            return passengerCar;
+        } else {
+            Truck truck = new Truck();
+            truck.setLoadCapacity(randomGenerator.generate());
+            return truck;
+        }
     }
 
     public boolean carEquals(Car firstCar, Car secondCar) {

@@ -22,10 +22,6 @@ public class Truck extends Car implements CountRestore {
         return this.loadCapacity = 50;
     }
 
-    @Override
-    public int randomRestore() {
-        return this.loadCapacity = getRandom().nextInt(0,10);
-    }
 
     @Override
     public String toString() {

@@ -21,10 +21,7 @@ public class PassengerCar extends Car implements CountRestore {
     public int restore() {
         return this.passengerCount = 100;
     }
-    @Override
-    public int randomRestore() {
-        return this.passengerCount = getRandom().nextInt(0,10);
-    }
+
 
     @Override
     public String toString() {
