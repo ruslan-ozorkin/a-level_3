@@ -6,6 +6,7 @@ import com.ozorkin.util.RandomGenerator;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.UUID;
 
 public class CarService {
     private final CarRepository carArrayRepository;
@@ -17,57 +18,58 @@ public class CarService {
         this.carArrayRepository = carArrayRepository;
     }
 
-    public Truck createTruck() {
-        final Truck truck = new Truck();
-        truck.setManufacturer(createString());
-        truck.setEngine(new Engine(random.nextInt(0, 1000), createString()));
-        truck.setColor(getRandomColor());
-        truck.setPrice(random.nextInt(0, 10000));
-        truck.setCount(1);
-        truck.setLoadCapacity(randomGenerator.generate());
-        truck.setType(Type.TRUCK);
-        carArrayRepository.save(truck);
-        return truck;
+    public Car createCar(Type type){
+        final Car car = createCarType(type);
+        car.setManufacturer(createString());
+        car.setEngine(new Engine(random.nextInt(0, 1000), createString()));
+        car.setColor(getRandomColor());
+        car.setPrice(random.nextInt(0, 10000));
+        car.setCount(1);
+        car.randomRestore();
+        car.setType(type);
+        return car;
     }
 
-    public PassengerCar createPassengerCar() {
-        final PassengerCar passengerCar = new PassengerCar();
-        passengerCar.setManufacturer(createString());
-        passengerCar.setEngine(new Engine(random.nextInt(0, 1000), createString()));
-        passengerCar.setColor(getRandomColor());
-        passengerCar.setPrice(random.nextInt(0, 10000));
-        passengerCar.setCount(1);
-        passengerCar.setPassengerCount(randomGenerator.generate());
-        passengerCar.setType(Type.CAR);
-        carArrayRepository.save(passengerCar);
-        return passengerCar;
+    public Car createCustomCar(Type type, String manufacturer, Engine engine, Color color, String id) {
+        final Car car = createCarType(type);
+        car.setManufacturer(manufacturer);
+        car.setEngine(engine);
+        car.setColor(color);
+        car.setId(id);
+        car.setCount(1);
+        car.setType(type);
+        car.setPrice(5000);
+        carArrayRepository.save(car);
+        return car;
     }
 
-    public int createPassengerCar(RandomGenerator randomGenerator) {
+    private Car createCarType(Type type) {
+        if (type.equals(Type.CAR)) {
+            return new PassengerCar();
+        } else
+            return new Truck();
+    }
+
+    public boolean carEquals(Car firstCar, Car secondCar) {
+        if (firstCar.getType() == secondCar.getType()) {
+            if (firstCar.hashCode() == secondCar.hashCode()) {
+                return firstCar.equals(secondCar);
+            }
+        }
+        return false;
+    }
+
+    public int createCar(Type type,RandomGenerator randomGenerator) {
         final int count = randomGenerator.generate();
         if (count != 0) {
             for (int i = 0; i < count; i++) {
-                PassengerCar passengerCar = createPassengerCar();
-                print(passengerCar);
+                Car car = createCar(type);
+                print(car);
             }
             return count;
         }
         return -1;
     }
-
-    public int createTruck(RandomGenerator randomGenerator) {
-        final int count = randomGenerator.generate();
-        if (count != 0) {
-            for (int i = 0; i < count; i++) {
-                Truck truck = createTruck();
-                print(truck);
-            }
-            return count;
-        }
-        return -1;
-    }
-
-
     public void insert(int index, final Car car) {
         carArrayRepository.insert(index, car);
     }
@@ -153,5 +155,6 @@ public class CarService {
         } while (randomColor == color);
         carArrayRepository.updateColor(car.getId(), randomColor);
     }
+
 
 }

@@ -23,8 +23,14 @@ public class Truck extends Car implements CountRestore {
     }
 
     @Override
+    public int randomRestore() {
+        return this.loadCapacity = getRandom().nextInt(0,10);
+    }
+
+    @Override
     public String toString() {
         return String.format("%s: {manufacturer =%s ; Engine =%s; Color = %s; LoadCapacity=%d; ID=%s)}",
                 getType(), getManufacturer(), getEngine(), getColor(), getLoadCapacity(), getId());
     }
+
 }

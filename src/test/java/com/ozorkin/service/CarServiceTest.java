@@ -2,6 +2,7 @@ package com.ozorkin.service;
 
 import com.ozorkin.model.Car;
 import com.ozorkin.model.PassengerCar;
+import com.ozorkin.model.Type;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.util.RandomGenerator;
 import org.junit.jupiter.api.Assertions;
@@ -20,32 +21,27 @@ class CarServiceTest {
     }
 
     @Test
-    void createTruckWithRandomGenerator() {
+    void createCarWithRandomGenerator() {
         RandomGenerator randomGenerator = new RandomGenerator();
-        int countGeneratedTrucks = target.createTruck(randomGenerator);
+        int countGeneratedTrucks = target.createCar(Type.CAR,randomGenerator);
         Assertions.assertTrue(countGeneratedTrucks >0 && countGeneratedTrucks <=10);
     }
 
     @Test
-    void createPassengerCar() {
-        final Car car = target.createPassengerCar();
+    void createCar() {
+        final Car car = target.createCar(Type.CAR);
         Assertions.assertNotNull(car);
         Assertions.assertNotNull(car.getId());
     }
+
     @Test
-    void createTruck() {
-        final Car car = target.createTruck();
-        Assertions.assertNotNull(car);
-        Assertions.assertNotNull(car.getId());
-    }
-    @Test
-    void printPassengerCar() {
-        final Car car = target.createPassengerCar();
+    void printCar() {
+        final Car car = target.createCar(Type.CAR);
         Assertions.assertDoesNotThrow(() -> target.print(car));
     }
     @Test
     void printTruck() {
-        final Car car = target.createTruck();
+        final Car car = target.createCar(Type.TRUCK);
         Assertions.assertDoesNotThrow(() -> target.print(car));
     }
 
@@ -92,14 +88,14 @@ class CarServiceTest {
 
     @Test
     void insert() {
-        final Car car = target.createPassengerCar();
+        final Car car = target.createCar(Type.CAR);
         final int index = 2;
         Assertions.assertDoesNotThrow(() -> target.insert(index,car));
     }
 
     @Test
     void insertOutOfBounds() {
-        final Car car = target.createPassengerCar();
+        final Car car = target.createCar(Type.CAR);
         final int index = -2;
         Assertions.assertDoesNotThrow(() -> target.insert(index, car));
     }
@@ -142,7 +138,7 @@ class CarServiceTest {
 
     @Test
     void check() {
-        final Car car = target.createPassengerCar();
+        final Car car = target.createCar(Type.CAR);
         Assertions.assertDoesNotThrow(() -> CarService.check(car));
     }
 
