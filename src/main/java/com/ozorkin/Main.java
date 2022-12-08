@@ -1,8 +1,6 @@
 package com.ozorkin;
 
-import com.ozorkin.model.Car;
-import com.ozorkin.model.Color;
-import com.ozorkin.model.Engine;
+import com.ozorkin.model.*;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.service.CarService;
 
@@ -10,14 +8,17 @@ import com.ozorkin.service.CarService;
 public class Main {
     public static void main(String[] args) {
         final CarService carService = new CarService(new CarRepository());
-        final Car car1 = carService.create();
-        Car car2= new Car("FORD",new Engine(100,"balance"),Color.DARK_BLUE,"PPPPPPP");
+        carService.createPassengerCar();
+        carService.createTruck();
+        carService.printAll();
 
-        carService.create(carService.randomGenerator);
-//        carService.printAll();
-//        carService.insert(0,car2);
-//        carService.printAll();
-//
+        for (Car car : carService.getAll()) {
+            car.restore();
+        }
+        carService.printAll();
+
+//        carService.createPassengerCar(carService.randomGenerator);
+//        carService.createTruck(carService.randomGenerator);
 //        final Car[] all = carService.getAll();
 //        for (Car cars: all ) {
 //            carService.print(cars);

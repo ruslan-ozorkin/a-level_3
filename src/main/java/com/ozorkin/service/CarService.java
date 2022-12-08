@@ -1,8 +1,6 @@
 package com.ozorkin.service;
 
-import com.ozorkin.model.Car;
-import com.ozorkin.model.Color;
-import com.ozorkin.model.Engine;
+import com.ozorkin.model.*;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.util.RandomGenerator;
 
@@ -19,33 +17,60 @@ public class CarService {
         this.carArrayRepository = carArrayRepository;
     }
 
-    public int create(RandomGenerator randomGenerator) {
-        final int count = randomGenerator.generate();
-        if (count==0) {
-            return -1;
-        }
-        for (int i = 0; i < count; i++) {
-            Car car = create();
-            print(car);
-        }
-        return count;
+    public Truck createTruck() {
+        final Truck truck = new Truck();
+        truck.setManufacturer(createString());
+        truck.setEngine(new Engine(random.nextInt(0, 1000), createString()));
+        truck.setColor(getRandomColor());
+        truck.setPrice(random.nextInt(0, 10000));
+        truck.setCount(1);
+        truck.setLoadCapacity(randomGenerator.generate());
+        truck.setType(Type.TRUCK);
+        carArrayRepository.save(truck);
+        return truck;
     }
-    public void insert(int index, final Car car) {
 
+    public PassengerCar createPassengerCar() {
+        final PassengerCar passengerCar = new PassengerCar();
+        passengerCar.setManufacturer(createString());
+        passengerCar.setEngine(new Engine(random.nextInt(0, 1000), createString()));
+        passengerCar.setColor(getRandomColor());
+        passengerCar.setPrice(random.nextInt(0, 10000));
+        passengerCar.setCount(1);
+        passengerCar.setPassengerCount(randomGenerator.generate());
+        passengerCar.setType(Type.CAR);
+        carArrayRepository.save(passengerCar);
+        return passengerCar;
+    }
+
+    public int createPassengerCar(RandomGenerator randomGenerator) {
+        final int count = randomGenerator.generate();
+        if (count != 0) {
+            for (int i = 0; i < count; i++) {
+                PassengerCar passengerCar = createPassengerCar();
+                print(passengerCar);
+            }
+            return count;
+        }
+        return -1;
+    }
+
+    public int createTruck(RandomGenerator randomGenerator) {
+        final int count = randomGenerator.generate();
+        if (count != 0) {
+            for (int i = 0; i < count; i++) {
+                Truck truck = createTruck();
+                print(truck);
+            }
+            return count;
+        }
+        return -1;
+    }
+
+
+    public void insert(int index, final Car car) {
         carArrayRepository.insert(index, car);
     }
-
-    public Car create() {
-        final Car car = new Car();
-        car.setManufacturer(createString());
-        car.setEngine(new Engine(random.nextInt(0,1000),createString()));
-        car.setColor(getRandomColor());
-        car.setPrice(random.nextInt(0,10000));
-        car.setCount(1);
-        carArrayRepository.save(car);
-        return car;
-    }
-
 
 
     private Color getRandomColor() {
@@ -54,29 +79,27 @@ public class CarService {
         return values[randomIndex];
     }
 
-
     private String createString() {
         StringBuilder sb = new StringBuilder();
-        int stringLength  = random.nextInt(1,10);
+        int stringLength = random.nextInt(1, 10);
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         for (int i = 0; i < stringLength; i++) {
             char randomChar = alphabet.charAt(random.nextInt(alphabet.length()));
             sb.append(randomChar);
         }
-
         return sb.toString();
     }
 
-    public  void print(Car car) {
-
-        System.out.println( "{manufacturer: " + car.getManufacturer() +
-                  ", engine: " + car.getEngine() +
-                   ", color: " + car.getColor() +
-                   ", count: " + car.getCount() +
-                   ", price: " + car.getPrice() +
-                   ", id: " + car.getId() +"}");
+    public void print(Car car) {
+        System.out.println(car.getType() + "{manufacturer: " + car.getManufacturer() +
+                ", engine: " + car.getEngine() +
+                ", color: " + car.getColor() +
+                ", count: " + car.getCount() +
+                ", price: " + car.getPrice() +
+                ", id: " + car.getId() + "}");
     }
+
     public static void check(Car car) {
         if (car.getCount() > 0 && car.getEngine().getPower() > 200) {
             System.out.println("Car is ready to sell");
@@ -84,10 +107,9 @@ public class CarService {
             System.out.println("Car amount is less than 1 and low power");
         } else if (car.getEngine().getPower() <= 200) {
             System.out.println("LOW POWER");
-        } else if (car.getCount() < 1){
+        } else if (car.getCount() < 1) {
             System.out.println("AMOUNT IS LESS THAN 1");
         }
-
     }
 
     public void printAll() {
@@ -95,34 +117,32 @@ public class CarService {
         System.out.println(Arrays.toString(all));
     }
 
-
     public Car[] getAll() {
         return carArrayRepository.getAll();
     }
 
     public Car find(final String id) {
-        if (id == null || id.isEmpty()) {
-            return null;
-        }
-        return carArrayRepository.getById(id);
+        return notNullNotEmpty(id) ? carArrayRepository.getById(id) : null;
     }
 
     public void delete(final String id) {
-        if (id == null || id.isEmpty()) {
-            return;
+        if (notNullNotEmpty(id)) {
+            carArrayRepository.delete(id);
         }
-        carArrayRepository.delete(id);
     }
 
     public void changeRandomColor(final String id) {
-        if (id == null || id.isEmpty()) {
-            return;
+        if (notNullNotEmpty(id)) {
+            final Car car = find(id);
+            if (car == null) {
+                return;
+            }
+            findAndChangeRandomColor(car);
         }
-        final Car car = find(id);
-        if (car == null) {
-            return;
-        }
-        findAndChangeRandomColor(car);
+    }
+
+    private boolean notNullNotEmpty(String id) {
+        return !(id == null || id.isEmpty());
     }
 
     private void findAndChangeRandomColor(final Car car) {

@@ -52,11 +52,10 @@ public class CarRepository {
         final int newLength = foundLength();
         if (index > newLength) {
             putCar(car);
-        }
-        else {
-            System.arraycopy(cars, index, cars, index+1,
+        } else {
+            System.arraycopy(cars, index, cars, index + 1,
                     cars.length - (index + 1));
-            cars[index]=car;
+            cars[index] = car;
         }
 
     }

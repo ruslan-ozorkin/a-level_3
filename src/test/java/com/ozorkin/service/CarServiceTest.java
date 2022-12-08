@@ -1,7 +1,9 @@
 package com.ozorkin.service;
 
 import com.ozorkin.model.Car;
+import com.ozorkin.model.PassengerCar;
 import com.ozorkin.repository.CarRepository;
+import com.ozorkin.util.RandomGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,15 +20,32 @@ class CarServiceTest {
     }
 
     @Test
-    void create() {
-        final Car car = target.create();
-        Assertions.assertNotNull(car);
-        Assertions.assertNotNull(car.getId());
+    void createTruckWithRandomGenerator() {
+        RandomGenerator randomGenerator = new RandomGenerator();
+        int countGeneratedTrucks = target.createTruck(randomGenerator);
+        Assertions.assertTrue(countGeneratedTrucks >0 && countGeneratedTrucks <=10);
     }
 
     @Test
-    void print() {
-        final Car car = target.create();
+    void createPassengerCar() {
+        final Car car = target.createPassengerCar();
+        Assertions.assertNotNull(car);
+        Assertions.assertNotNull(car.getId());
+    }
+    @Test
+    void createTruck() {
+        final Car car = target.createTruck();
+        Assertions.assertNotNull(car);
+        Assertions.assertNotNull(car.getId());
+    }
+    @Test
+    void printPassengerCar() {
+        final Car car = target.createPassengerCar();
+        Assertions.assertDoesNotThrow(() -> target.print(car));
+    }
+    @Test
+    void printTruck() {
+        final Car car = target.createTruck();
         Assertions.assertDoesNotThrow(() -> target.print(car));
     }
 
@@ -37,52 +56,32 @@ class CarServiceTest {
 
     @Test
     void findIdIncorrectNullId() {
-        // initialize
         String id = null;
-
-        // action
         final Car car = target.find(id);
-
-        // checks
         Assertions.assertNull(car);
     }
 
     @Test
     void findIdIncorrectEmptyId() {
-        // initialize
         String id = "";
-
-        // action
         final Car car = target.find(id);
-
-        // checks
         Assertions.assertNull(car);
     }
 
     @Test
     void findNotFound() {
-        // initialize
         String id = "123";
         Mockito.when(repository.getById("123")).thenReturn(null);
-
-        // action
         final Car car = target.find(id);
-
-        // checks
         Assertions.assertNull(car);
     }
 
     @Test
     void find() {
-        // initialize
-        final Car expected = new Car();
+        final Car expected = new PassengerCar();
         String id = "123";
         Mockito.when(repository.getById("123")).thenReturn(expected);
-
-        // action
         final Car actual = target.find(id);
-
-        // checks
         Assertions.assertEquals(expected, actual);
     }
 
@@ -93,18 +92,17 @@ class CarServiceTest {
 
     @Test
     void insert() {
-        final Car car = target.create();
+        final Car car = target.createPassengerCar();
         final int index = 2;
         Assertions.assertDoesNotThrow(() -> target.insert(index,car));
     }
 
     @Test
     void insertOutOfBounds() {
-        final Car car = target.create();
+        final Car car = target.createPassengerCar();
         final int index = -2;
         Assertions.assertDoesNotThrow(() -> target.insert(index, car));
     }
-
     @Test
     void insertNull() {
         final Car car =null;
@@ -114,11 +112,21 @@ class CarServiceTest {
 
     @Test
     void delete() {
-        String id =  "0000-1111";
-        Assertions.assertDoesNotThrow(() -> target.delete(id));
+        final String id =  "0000-1111";
+        target.delete(id);
+        Mockito.verify(repository).delete(id);
+    }
+    @Test
+    void deleteIdNull() {
+        target.delete(null);
+        Mockito.verify(repository, Mockito.never()).delete(Mockito.anyString());
     }
 
-
+    @Test
+    void deleteIdEmpty() {
+        target.delete("");
+        Mockito.verify(repository, Mockito.never()).delete(Mockito.anyString());
+    }
     @Test
     void changeRandomColor() {
         String id = "333-22-11";
@@ -128,19 +136,14 @@ class CarServiceTest {
     @Test
     void changeRandomColorNullId() {
         String id = null;
-
-        // action
-
         final Car car = target.find(id);
-        // checks
         Assertions.assertNull(car);
     }
 
     @Test
     void check() {
-        final Car car = target.create();
+        final Car car = target.createPassengerCar();
         Assertions.assertDoesNotThrow(() -> CarService.check(car));
     }
-
 
 }
