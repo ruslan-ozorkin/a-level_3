@@ -22,6 +22,7 @@ public class PassengerCar extends Car implements CountRestore {
         return this.passengerCount = 100;
     }
 
+
     @Override
     public String toString() {
 
@@ -29,4 +30,5 @@ public class PassengerCar extends Car implements CountRestore {
                 getType(), getManufacturer(), getEngine(), getColor(), getPassengerCount(), getId());
 
     }
+
 }
