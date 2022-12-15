@@ -54,6 +54,7 @@ public abstract class Car implements CountRestore {
                 ", count=" + count +
                 ", price=" + price +
                 ", id='" + id +
+                ", count='" + count +
                 '}';
     }
 
