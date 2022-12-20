@@ -5,8 +5,8 @@ import com.ozorkin.repository.CarRepository;
 import com.ozorkin.util.RandomGenerator;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 public class CarService {
     private final CarRepository carArrayRepository;
@@ -18,8 +18,62 @@ public class CarService {
         this.carArrayRepository = carArrayRepository;
     }
 
-    public Car createCar(Type type){
+    public void printInfo(final Car car) {
+        final Optional<Car> optionalCar = Optional.ofNullable(car);
+        optionalCar.ifPresentOrElse(car1 -> {
+            print(car1);
+        }, () -> {
+            final Car newCar = createCar(Type.CAR);
+            printInfo(newCar);
+        });
+
+    }
+
+    public void printEngineInfo(Car car) {
+        car = Optional.ofNullable(car).orElseGet(() -> createCar(Type.CAR));
+        Optional.ofNullable(car).map(Car::getEngine).ifPresent(System.out::println);
+    }
+
+    public void checkCount(final Car car) {
+        final Optional<Car> optionalCar = Optional.ofNullable(car);
+        if (car != null) {
+
+            optionalCar.ifPresent(newCar -> {
+                try {
+                    optionalCar.filter(someCar -> {
+                        final boolean b = newCar.getCount() > 10;
+                        if (b) {
+                            System.out.println("Manufacturer: " + newCar.getManufacturer());
+                            System.out.println("Count: " + newCar.getCount());
+                        }
+                        return b;
+                    }).orElseThrow(() -> new UserInputException("Wrong count of cars: " + newCar.getCount()));
+                } catch (UserInputException e) {
+                    System.out.println("Need more cars!");
+                }
+            });
+        }
+    }
+
+    public void printColor(final Car car) {
+        final Car expectedCarOrNew = Optional.ofNullable(car).orElse(createCar(Type.CAR));
+        System.out.println("Color  of car id: " + expectedCarOrNew.getId() + " " + expectedCarOrNew.getColor());
+    }
+
+    public void printManufacturerAndCount(final Car car) {
+        final Optional<Car> optionalCar = Optional.ofNullable(car);
+        optionalCar.ifPresent(someCar -> {
+            System.out.println("Manufacturer: " + someCar.getManufacturer());
+            System.out.println("Count: " + someCar.getCount());
+        });
+    }
+
+
+    public Car createCar(Type type) {
         final Car car = createCarType(type);
+        if (car == null) {
+            return null;
+        }
         car.setManufacturer(createString());
         car.setEngine(new Engine(random.nextInt(0, 1000), createString()));
         car.setColor(getRandomColor());
@@ -31,6 +85,9 @@ public class CarService {
 
     public Car createCustomCar(Type type, String manufacturer, Engine engine, Color color, String id) {
         final Car car = createCarType(type);
+        if (car == null) {
+            return null;
+        }
         car.setManufacturer(manufacturer);
         car.setEngine(engine);
         car.setColor(color);
@@ -47,7 +104,7 @@ public class CarService {
             PassengerCar passengerCar = new PassengerCar();
             passengerCar.setPassengerCount(randomGenerator.generate());
             return passengerCar;
-        } else  if (type.equals(Type.TRUCK)){
+        } else if (type.equals(Type.TRUCK)) {
             Truck truck = new Truck();
             truck.setLoadCapacity(randomGenerator.generate());
             return truck;
@@ -64,7 +121,7 @@ public class CarService {
         return false;
     }
 
-    public int createCar(Type type,RandomGenerator randomGenerator) {
+    public int createCar(Type type, RandomGenerator randomGenerator) {
         final int count = randomGenerator.generate();
         if (count != 0) {
             for (int i = 0; i < count; i++) {
@@ -75,6 +132,7 @@ public class CarService {
         }
         return -1;
     }
+
     public void insert(int index, final Car car) {
         carArrayRepository.insert(index, car);
     }
@@ -99,12 +157,7 @@ public class CarService {
     }
 
     public void print(Car car) {
-        System.out.println(car.getType() + "{manufacturer: " + car.getManufacturer() +
-                ", engine: " + car.getEngine() +
-                ", color: " + car.getColor() +
-                ", count: " + car.getCount() +
-                ", price: " + car.getPrice() +
-                ", id: " + car.getId() + "}");
+        System.out.println(car.getType() + "{manufacturer: " + car.getManufacturer() + ", engine: " + car.getEngine() + ", color: " + car.getColor() + ", count: " + car.getCount() + ", price: " + car.getPrice() + ", id: " + car.getId() + "}");
     }
 
     public static void check(Car car) {

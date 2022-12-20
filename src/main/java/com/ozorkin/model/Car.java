@@ -29,6 +29,7 @@ public abstract class Car implements CountRestore {
 
     }
 
+
     public Type getType() {
         return type;
     }
