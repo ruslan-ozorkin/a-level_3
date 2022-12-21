@@ -25,8 +25,8 @@ public class Truck extends Car implements CountRestore {
 
     @Override
     public String toString() {
-        return String.format("%s: {manufacturer =%s ; Engine =%s; Color = %s; LoadCapacity=%d; ID=%s)}",
-                getType(), getManufacturer(), getEngine(), getColor(), getLoadCapacity(), getId());
+        return String.format("%s: {manufacturer =%s ; Engine =%s; Color = %s; LoadCapacity=%d; ID=%s; Count=%d)}",
+                getType(), getManufacturer(), getEngine(), getColor(), getLoadCapacity(), getId(),getCount());
     }
 
 }

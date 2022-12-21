@@ -3,7 +3,7 @@ package com.ozorkin.repository;
 import com.ozorkin.model.Car;
 import com.ozorkin.model.Color;
 
-public class CarRepository {
+public class CarRepository implements Repository<Car>{
 
     private static Car[] cars = new Car[10];
     private static CarRepository instance;
