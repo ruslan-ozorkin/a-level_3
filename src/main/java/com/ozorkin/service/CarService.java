@@ -10,9 +10,26 @@ import java.util.Random;
 
 public class CarService {
     private final CarRepository carArrayRepository;
+    private static CarService instance;
+
     public final RandomGenerator randomGenerator = new RandomGenerator();
 
     private final Random random = new Random();
+    public int compareCar(final Car first, final Car second) {
+        return first.getId().compareTo(second.getId());
+    }
+    public static CarService getInstance() {
+        if (instance == null) {
+            instance = new CarService(CarRepository.getInstance());
+        }
+        return instance;
+    }
+    public static CarService getInstance(final CarRepository repository) {
+        if (instance == null) {
+            instance = new CarService(repository);
+        }
+        return instance;
+    }
 
     public CarService(final CarRepository carArrayRepository) {
         this.carArrayRepository = carArrayRepository;
@@ -67,6 +84,11 @@ public class CarService {
             System.out.println("Count: " + someCar.getCount());
         });
     }
+    public void createCar(Type type,int count) {
+        for (int i = 0; i < count; i++) {
+            createCar(type);
+        }
+    }
 
 
     public Car createCar(Type type) {
@@ -80,6 +102,7 @@ public class CarService {
         car.setPrice(random.nextInt(0, 10000));
         car.setCount(1);
         car.setType(type);
+        carArrayRepository.save(car);
         return car;
     }
 
@@ -174,7 +197,9 @@ public class CarService {
 
     public void printAll() {
         final Car[] all = carArrayRepository.getAll();
-        System.out.println(Arrays.toString(all));
+        for (Car car : all) {
+            print(car);
+        }
     }
 
     public Car[] getAll() {

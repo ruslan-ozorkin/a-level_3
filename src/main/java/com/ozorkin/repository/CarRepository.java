@@ -6,7 +6,17 @@ import com.ozorkin.model.Color;
 public class CarRepository {
 
     private static Car[] cars = new Car[10];
+    private static CarRepository instance;
 
+
+    public CarRepository() {
+    }
+    public static CarRepository getInstance() {
+        if (instance == null) {
+            instance = new CarRepository();
+        }
+        return instance;
+    }
     public void save(final Car car) {
         final int index = putCar(car);
         if (index == cars.length) {
