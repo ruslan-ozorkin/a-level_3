@@ -19,17 +19,13 @@ public class CarService {
 
     private final Random random = new Random();
 
-    public Map <Color, Integer> innerList (List <Car> cars,int price) {
-        return cars.stream()
-                .sorted(new Comparator<Car>() {
-                    @Override
-                    public int compare(Car o1, Car o2) {
-                        return o1.getColor().compareTo(o2.getColor());
-                    }
-                })
+    public Map <Color, Integer> innerList (List <List<Car>> cars,int price) {
+
+        return cars.stream().flatMap(List::stream)
+                .sorted(Comparator.comparing(Car::getColor))
                 .peek(System.out::println)
-                .filter(car -> car.getPrice() >= price)
-                .collect(Collectors.toMap(Car::getColor,Car::getCount));
+                .filter(car -> car.getPrice() > 2500)
+                .collect(Collectors.toMap(Car::getColor, Car::getCount));
     }
 
      Function<Map<String, Object>, Car> mapToObject = map -> {
@@ -94,7 +90,8 @@ public class CarService {
         return cars.stream()
                 .sorted(Comparator.comparing(Car::getManufacturer))
                 .distinct()
-                .collect(Collectors.toMap(Car::getId, Car::getType, (a, b) -> b));
+                .collect(Collectors.toMap(Car::getId, Car::getType, (a, b) -> b,LinkedHashMap::new));
+
     }
 
     public int countSum(List<Car> cars) {
