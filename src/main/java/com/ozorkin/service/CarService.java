@@ -4,9 +4,8 @@ import com.ozorkin.model.*;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.util.RandomGenerator;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collector;
 
 public class CarService {
     private final CarRepository carArrayRepository;
@@ -15,6 +14,31 @@ public class CarService {
     public final RandomGenerator randomGenerator = new RandomGenerator();
 
     private final Random random = new Random();
+    public Map<String,Integer>  mappingListManufacturerAndCount (List<Car> cars) {
+         Map <String,Integer>  map = new HashMap<>();
+        for (Car car : cars) {
+            map.put(car.getManufacturer(),car.getCount());
+        }
+        return map;
+    }
+
+    public Map<Engine,List<Car>>  mappingListEngineAndCar (List<Car> cars) {
+        Map <Engine,List<Car>>  map = new HashMap<>();
+
+        for (Car car : cars) {
+            map.put(car.getEngine(),new ArrayList<>());
+        }
+        for (Car car : cars) {
+            map.get(car.getEngine()).add(car);
+        }
+
+        return map;
+    }
+
+
+
+
+
     public int compareCar(final Car first, final Car second) {
         return first.getId().compareTo(second.getId());
     }
