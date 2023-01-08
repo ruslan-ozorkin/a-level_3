@@ -1,0 +1,16 @@
+{
+  "cars": [
+    {
+      "type": "PassengerCar",
+      "manufacturer": "JSON",
+      "engine": {
+        "engin_type": "GIGI",
+        "power": "1000"
+      },
+      "color": "AQUA",
+      "count": "1",
+      "price": "3000",
+      "id": "json_code"
+    }
+  ]
+}
