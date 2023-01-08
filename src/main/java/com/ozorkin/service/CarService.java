@@ -4,6 +4,9 @@ import com.ozorkin.model.*;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.util.RandomGenerator;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -18,6 +21,18 @@ public class CarService {
     public final RandomGenerator randomGenerator = new RandomGenerator();
 
     private final Random random = new Random();
+
+    public void readFile (final String path) {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        InputStream input = loader.getResourceAsStream(path);
+        if (input != null) {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
+            List<String> stringList = Collections.singletonList(bufferedReader.lines().toString());
+            System.out.println(stringList);
+
+        }
+
+    }
 
     public Map <Color, Integer> innerList (List <Car> cars,int price) {
         return cars.stream()
