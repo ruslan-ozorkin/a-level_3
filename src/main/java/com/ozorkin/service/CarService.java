@@ -50,8 +50,13 @@ public class CarService {
     }
 
 
-    public Map<Color, Integer> innerList(List<Car> cars, int price) {
-        return cars.stream().sorted(Comparator.comparing(Car::getColor)).peek(System.out::println).filter(car -> car.getPrice() >= price).collect(Collectors.toMap(Car::getColor, Car::getCount));
+    public Map <Color, Integer> innerList (List <List<Car>> cars,int price) {
+
+        return cars.stream().flatMap(List::stream)
+                .sorted(Comparator.comparing(Car::getColor))
+                .peek(System.out::println)
+                .filter(car -> car.getPrice() > price)
+                .collect(Collectors.toMap(Car::getColor, Car::getCount));
     }
 
 
