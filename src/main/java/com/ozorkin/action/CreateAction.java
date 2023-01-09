@@ -1,6 +1,6 @@
 package com.ozorkin.action;
 
-import com.ozorkin.model.Type;
+import com.ozorkin.model.CarType;
 import com.ozorkin.util.UserInput;
 
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class CreateAction implements Action {
             count = DEFAULT_COUNT;
         }
 
-        CAR_SERVICE.createCar(Type.CAR,count);
+        CAR_SERVICE.createCar(CarType.CAR,count);
         System.out.printf("Created %d cars%n", count);
     }
 }

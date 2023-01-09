@@ -27,7 +27,7 @@ public class PassengerCar extends Car {
     public String toString() {
 
         return String.format("%s: {manufacturer =%s ; Engine =%s; Color = %s; PassengerCount=%d; ID=%s; Count=%d}",
-                getType(), getManufacturer(), getEngine(), getColor(), getPassengerCount(), getId(), getCount());
+                getCarType(), getManufacturer(), getEngine(), getColor(), getPassengerCount(), getId(), getCount());
 
     }
 

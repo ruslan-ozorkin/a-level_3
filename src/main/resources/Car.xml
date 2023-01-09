@@ -1,13 +1,16 @@
-  <car>
-        <type>PassengerCar</type>
+<Cars xmlns="">
+    <cars>
+        <CarType>CAR</CarType>
         <manufacturer>XML</manufacturer>
         <engine>
-            <engin_type>GIGI</engin_type>
+            <type>GIGI</type>
             <power>1000</power>
         </engine>
-        <color>AQUA</color>
+        <Color>AQUA</Color>
         <count>1</count>
         <price>3000</price>
         <id>XML_F</id>
         <passengerCount>4</passengerCount>
- </car>
+    </cars>
+
+</Cars>

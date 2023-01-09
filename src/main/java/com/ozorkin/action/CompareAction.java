@@ -1,12 +1,12 @@
 package com.ozorkin.action;
 
 import com.ozorkin.model.Car;
-import com.ozorkin.model.Type;
+import com.ozorkin.model.CarType;
 
 public class CompareAction implements Action {
     @Override
     public void execute() {
-        CAR_SERVICE.createCar(Type.CAR,5);
+        CAR_SERVICE.createCar(CarType.CAR,5);
         final Car[] all = CAR_SERVICE.getAll();
         for (int i = 0; i < all.length - 1; i++) {
             Car currentCar = all[i];

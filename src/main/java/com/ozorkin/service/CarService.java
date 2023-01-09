@@ -3,16 +3,20 @@ package com.ozorkin.service;
 import com.ozorkin.model.*;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.util.RandomGenerator;
+import org.apache.commons.lang3.EnumUtils;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.ozorkin.model.Type.CAR;
+import static com.ozorkin.model.CarType.CAR;
 
 public class CarService {
     private final CarRepository carArrayRepository;
@@ -22,117 +26,116 @@ public class CarService {
 
     private final Random random = new Random();
 
-    public void readFile (final String path) {
+    public Map<String, Object> mapFromFile(String path) throws IOException {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         InputStream input = loader.getResourceAsStream(path);
-        if (input != null) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
-            List<String> stringList = Collections.singletonList(bufferedReader.lines().toString());
-            System.out.println(stringList);
-
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
+        final Map<String, Object> map = new HashMap<>();
+        List<String> collect = bufferedReader.lines().toList();
+        final Pattern pattern = Pattern.compile("(\\w|-)+");
+        Matcher matcher;
+        String key = null;
+        String value;
+        for (String s : collect) {
+            matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                key = matcher.group();
+            }
+            if (matcher.find()) {
+                value = matcher.group();
+                map.put(key, value);
+            }
         }
-
+        return map;
     }
 
-    public Map <Color, Integer> innerList (List <Car> cars,int price) {
-        return cars.stream()
-                .sorted(Comparator.comparing(Car::getColor))
-                .peek(System.out::println)
-                .filter(car -> car.getPrice() >= price)
-                .collect(Collectors.toMap(Car::getColor,Car::getCount));
+
+    public Map<Color, Integer> innerList(List<Car> cars, int price) {
+        return cars.stream().sorted(Comparator.comparing(Car::getColor)).peek(System.out::println).filter(car -> car.getPrice() >= price).collect(Collectors.toMap(Car::getColor, Car::getCount));
     }
 
-     Function<Map<String, Object>, Car> mapToObject = map -> {
-        Type type = (Type) map.getOrDefault("type", CAR);
-        if (type == CAR) {
+
+    public Function<Map<String, Object>, Car> mapToObject = map -> {
+        CarType carType = EnumUtils.getEnum(CarType.class, (String) map.getOrDefault("CarType", "CAR"));
+        if (carType == CAR) {
             return createPassengerCar(map);
         } else {
             return createTruck(map);
         }
     };
 
+
     private PassengerCar createPassengerCar(final Map<String, Object> map) {
         final PassengerCar passengerCar = (PassengerCar) createCar(CAR, map);
-        final int passengerCount = (int) map.getOrDefault("passengerCount", 10);
+        final int passengerCount = Integer.parseInt((String) map.getOrDefault("passengerCount", 10));
         passengerCar.setPassengerCount(passengerCount);
         return passengerCar;
     }
 
     private Truck createTruck(final Map<String, Object> map) {
-        final Truck truck = (Truck) createCar(Type.TRUCK, map);
-        final int loadCapacity = (int) map.getOrDefault("loadCapacity", 50);
+        final Truck truck = (Truck) createCar(CarType.TRUCK, map);
+        final int loadCapacity = Integer.parseInt((String) map.getOrDefault("loadCapacity", 50));
         truck.setLoadCapacity(loadCapacity);
         return truck;
     }
 
-    private Car createCar(final Type type, final Map<String, Object> map) {
+    private Car createCar(final CarType carType, final Map<String, Object> map) {
         final Car car;
-        if (type == CAR) {
+        if (carType == CAR) {
             car = new PassengerCar();
 
         } else {
             car = new Truck();
         }
-        final String manufacturer = (String) map.getOrDefault("manufacturer","ORIGINAL");
+        final String manufacturer = (String) map.getOrDefault("manufacturer", "ORIGINAL");
         car.setManufacturer(manufacturer);
-        final Engine engine = (Engine) map.getOrDefault("engine", new Engine(100,"Skoda"));
+        final Engine engine = new Engine(Integer.parseInt((String) map.get("power")), (String) map.get("type"));
         car.setEngine(engine);
-        final Color color = (Color) map.getOrDefault("color",Color.AQUA);
+        Color color = EnumUtils.getEnum(Color.class, (String) map.getOrDefault("Color", "AQUA"));
         car.setColor(color);
-        final int price = (int) map.getOrDefault("price",500);
+        final int price = Integer.parseInt((String) map.getOrDefault("price", 500));
         car.setPrice(price);
-        final int count = (int) map.getOrDefault("count",1);
+        final int count = Integer.parseInt((String) map.getOrDefault("count", 1));
         car.setCount(count);
         return car;
     }
 
 
-    public boolean priceCheck (List <Car> cars,int price) {
+    public boolean priceCheck(List<Car> cars, int price) {
         final Predicate<Car> myPredicate = car -> car.getPrice() > price;
-        return cars.stream()
-                .allMatch(myPredicate);
+        return cars.stream().allMatch(myPredicate);
     }
 
-    public String statistic (List <Car> cars) {
-       return  cars.stream()
-                .mapToInt(Car::getPrice)
-                .summaryStatistics()
-                .toString();
+    public String statistic(List<Car> cars) {
+        return cars.stream().mapToInt(Car::getPrice).summaryStatistics().toString();
 
     }
-    public Map <String,Type> mapToMap(List<Car> cars) {
-        return cars.stream()
-                .sorted(Comparator.comparing(Car::getManufacturer))
-                .distinct()
-                .collect(Collectors.toMap(Car::getId, Car::getType, (a, b) -> b,LinkedHashMap::new));
+
+    public Map<String, CarType> mapToMap(List<Car> cars) {
+        return cars.stream().sorted(Comparator.comparing(Car::getManufacturer)).distinct().collect(Collectors.toMap(Car::getId, Car::getCarType, (a, b) -> b, LinkedHashMap::new));
     }
 
     public int countSum(List<Car> cars) {
-        return cars.stream()
-                .map(Car::getCount)
-                .reduce(0, Integer::sum);
+        return cars.stream().map(Car::getCount).reduce(0, Integer::sum);
     }
 
-    public void findManufacturerByPrice (List<Car> cars, int price) {
-        cars.stream()
-                .filter(car -> car.getPrice() > price)
-                .map(Car::getManufacturer)
-                .forEach(System.out::println);
+    public void findManufacturerByPrice(List<Car> cars, int price) {
+        cars.stream().filter(car -> car.getPrice() > price).map(Car::getManufacturer).forEach(System.out::println);
     }
 
-    public Map<String,Integer>  mappingListManufacturerAndCount (List<Car> cars) {
-         Map <String,Integer>  map = new HashMap<>();
+    public Map<String, Integer> mappingListManufacturerAndCount(List<Car> cars) {
+        Map<String, Integer> map = new HashMap<>();
         for (Car car : cars) {
-            map.put(car.getManufacturer(),car.getCount());
+            map.put(car.getManufacturer(), car.getCount());
         }
         return map;
     }
 
-    public Map<Engine,List<Car>>  mappingListEngineAndCar (List<Car> cars) {
-        Map <Engine,List<Car>>  map = new HashMap<>();
+    public Map<Engine, List<Car>> mappingListEngineAndCar(List<Car> cars) {
+        Map<Engine, List<Car>> map = new HashMap<>();
 
         for (Car car : cars) {
-            map.put(car.getEngine(),new ArrayList<>());
+            map.put(car.getEngine(), new ArrayList<>());
         }
         for (Car car : cars) {
             map.get(car.getEngine()).add(car);
@@ -145,12 +148,14 @@ public class CarService {
     public int compareCar(final Car first, final Car second) {
         return first.getId().compareTo(second.getId());
     }
+
     public static CarService getInstance() {
         if (instance == null) {
             instance = new CarService(CarRepository.getInstance());
         }
         return instance;
     }
+
     public static CarService getInstance(final CarRepository repository) {
         if (instance == null) {
             instance = new CarService(repository);
@@ -211,15 +216,16 @@ public class CarService {
             System.out.println("Count: " + someCar.getCount());
         });
     }
-    public void createCar(Type type,int count) {
+
+    public void createCar(CarType carType, int count) {
         for (int i = 0; i < count; i++) {
-            createCar(type);
+            createCar(carType);
         }
     }
 
 
-    public Car createCar(Type type) {
-        final Car car = createCarType(type);
+    public Car createCar(CarType carType) {
+        final Car car = createCarType(carType);
         if (car == null) {
             return null;
         }
@@ -228,13 +234,13 @@ public class CarService {
         car.setColor(getRandomColor());
         car.setPrice(random.nextInt(0, 10000));
         car.setCount(1);
-        car.setType(type);
+        car.setCarType(carType);
         carArrayRepository.save(car);
         return car;
     }
 
-    public Car createCustomCar(Type type, String manufacturer, Engine engine, Color color, String id) {
-        final Car car = createCarType(type);
+    public Car createCustomCar(CarType carType, String manufacturer, Engine engine, Color color, String id) {
+        final Car car = createCarType(carType);
         if (car == null) {
             return null;
         }
@@ -243,18 +249,18 @@ public class CarService {
         car.setColor(color);
         car.setId(id);
         car.setCount(1);
-        car.setType(type);
+        car.setCarType(carType);
         car.setPrice(5000);
         carArrayRepository.save(car);
         return car;
     }
 
-    private Car createCarType(Type type) {
-        if (type.equals(CAR)) {
+    private Car createCarType(CarType carType) {
+        if (carType.equals(CAR)) {
             PassengerCar passengerCar = new PassengerCar();
             passengerCar.setPassengerCount(randomGenerator.generate());
             return passengerCar;
-        } else if (type.equals(Type.TRUCK)) {
+        } else if (carType.equals(CarType.TRUCK)) {
             Truck truck = new Truck();
             truck.setLoadCapacity(randomGenerator.generate());
             return truck;
@@ -263,7 +269,7 @@ public class CarService {
     }
 
     public boolean carEquals(Car firstCar, Car secondCar) {
-        if (firstCar.getType() == secondCar.getType()) {
+        if (firstCar.getCarType() == secondCar.getCarType()) {
             if (firstCar.hashCode() == secondCar.hashCode()) {
                 return firstCar.equals(secondCar);
             }
@@ -271,11 +277,11 @@ public class CarService {
         return false;
     }
 
-    public int createCar(Type type, RandomGenerator randomGenerator) {
+    public int createCar(CarType carType, RandomGenerator randomGenerator) {
         final int count = randomGenerator.generate();
         if (count != 0) {
             for (int i = 0; i < count; i++) {
-                Car car = createCar(type);
+                Car car = createCar(carType);
                 print(car);
             }
             return count;
@@ -307,7 +313,7 @@ public class CarService {
     }
 
     public void print(Car car) {
-        System.out.println(car.getType() + "{manufacturer: " + car.getManufacturer() + ", engine: " + car.getEngine() + ", color: " + car.getColor() + ", count: " + car.getCount() + ", price: " + car.getPrice() + ", id: " + car.getId() + "}");
+        System.out.println(car.getCarType() + "{manufacturer: " + car.getManufacturer() + ", engine: " + car.getEngine() + ", color: " + car.getColor() + ", count: " + car.getCount() + ", price: " + car.getPrice() + ", id: " + car.getId() + "}");
     }
 
     public static void check(Car car) {

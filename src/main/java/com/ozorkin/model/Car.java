@@ -13,7 +13,7 @@ public abstract class Car implements CountRestore {
     private String manufacturer;
     private Engine engine;
     private Color color;
-    private Type type;
+    private CarType carType;
     private int count;
     private int price;
     private  String id;
@@ -30,8 +30,8 @@ public abstract class Car implements CountRestore {
     }
 
 
-    public Type getType() {
-        return type;
+    public CarType getCarType() {
+        return carType;
     }
 
     public Car(Color color) {
