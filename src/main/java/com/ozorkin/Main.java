@@ -6,11 +6,12 @@ import com.ozorkin.repository.CarRepository;
 import com.ozorkin.service.CarService;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 
 public class Main {
     public static void main(String[] args) {
-        CarTree<Car> carTree = new CarTree<Car>();
+        /*CarTree<Car> carTree = new CarTree<Car>();
         CarService carService = new CarService(new CarRepository());
         carService.createCar(Type.CAR, 3);
         Car[] allCars = carService.getAll();
@@ -23,8 +24,25 @@ public class Main {
         carTree.insert(allCars[1]);
         carTree.preorder();
         carTree.postorder();
-        System.out.println(carTree.summaryCount());
+        System.out.println(carTree.summaryCount());*/
+
+
+        Predicate<String> predicate1 = String::isEmpty;
+        predicateExample(predicate1);
+        System.out.println(predicate1);
+        Predicate<Integer> predicate2 = value -> value > 0;
+//        predicateExample(predicate2);
+        Predicate<String> predicate3 = value -> value.length() > 1;
+        predicateExample(predicate3);
+
+
 
 
     }
+    private static void predicateExample(final Predicate<String> predicate) {
+        String lineForTest = "word";
+        System.out.println("predicate " + predicate.test(lineForTest));
+    }
+
+
 }
