@@ -1,7 +1,9 @@
 package com.ozorkin.service;
 
 import com.ozorkin.model.*;
+import com.ozorkin.repository.CarMapRepository;
 import com.ozorkin.repository.CarRepository;
+import com.ozorkin.repository.Repository;
 import com.ozorkin.util.RandomGenerator;
 import org.apache.commons.lang3.EnumUtils;
 
@@ -19,12 +21,16 @@ import java.util.stream.Collectors;
 import static com.ozorkin.model.CarType.CAR;
 
 public class CarService {
-    private final CarRepository carArrayRepository;
+    private final Repository<Car> carArrayRepository;
     private static CarService instance;
 
     public final RandomGenerator randomGenerator = new RandomGenerator();
 
     private final Random random = new Random();
+    private CarService(final Repository<Car> repository) {
+        this.carArrayRepository = repository;
+    }
+
 
     public Map<String, Object> mapFromFile(String path) throws IOException {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -50,7 +56,7 @@ public class CarService {
     }
 
 
-    public Map <Color, Integer> innerList (List <List<Car>> cars,int price) {
+    public Map<Color, Integer> innerList(List<List<Car>> cars, int price) {
 
         return cars.stream().flatMap(List::stream)
                 .sorted(Comparator.comparing(Car::getColor))
@@ -168,7 +174,7 @@ public class CarService {
         return instance;
     }
 
-    public CarService(final CarRepository carArrayRepository) {
+    public CarService(final CarMapRepository carArrayRepository) {
         this.carArrayRepository = carArrayRepository;
     }
 
@@ -294,9 +300,9 @@ public class CarService {
         return -1;
     }
 
-    public void insert(int index, final Car car) {
-        carArrayRepository.insert(index, car);
-    }
+//    public void insert(int index, final Car car) {
+//        carArrayRepository.insert(index, car);
+//    }
 
 
     private Color getRandomColor() {
@@ -344,38 +350,37 @@ public class CarService {
         return carArrayRepository.getAll();
     }
 
-    public Car find(final String id) {
-        return notNullNotEmpty(id) ? carArrayRepository.getById(id) : null;
-    }
-
-    public void delete(final String id) {
-        if (notNullNotEmpty(id)) {
-            carArrayRepository.delete(id);
+    public Optional<Car> find(final String id) {
+        if (id == null || id.isEmpty()) {
+            return Optional.empty();
         }
+        return carArrayRepository.getById(id);
+
     }
 
-    public void changeRandomColor(final String id) {
-        if (notNullNotEmpty(id)) {
-            final Car car = find(id);
-            if (car == null) {
+        public void delete ( final String id){
+            if (notNullNotEmpty(id)) {
+                carArrayRepository.delete(id);
+            }
+        }
+
+        public void changeRandomColor ( final String id){
+            if (id == null || id.isEmpty()) {
                 return;
             }
-            findAndChangeRandomColor(car);
+            find(id).ifPresent(this::findAndChangeRandomColor);
         }
-    }
 
-    private boolean notNullNotEmpty(String id) {
-        return !(id == null || id.isEmpty());
-    }
+        private boolean notNullNotEmpty (String id){
+            return !(id == null || id.isEmpty());
+        }
 
-    private void findAndChangeRandomColor(final Car car) {
-        final Color color = car.getColor();
-        Color randomColor;
-        do {
-            randomColor = getRandomColor();
-        } while (randomColor == color);
-        carArrayRepository.updateColor(car.getId(), randomColor);
-    }
+        private void findAndChangeRandomColor ( final Car car){
+            final Color color = car.getColor();
+            final Color randomColor = Color.getRandomColor(color);
+//        carArrayRepository.updateColor(car.getId(), randomColor);
+        }
+
 
 
 }

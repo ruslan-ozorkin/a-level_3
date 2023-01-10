@@ -2,6 +2,7 @@ package com.ozorkin;
 
 import com.ozorkin.container.CarTree;
 import com.ozorkin.model.*;
+import com.ozorkin.repository.CarMapRepository;
 import com.ozorkin.repository.CarRepository;
 import com.ozorkin.service.CarService;
 
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        CarService carService = new CarService(new CarRepository());
+        CarService carService = new CarService(new CarMapRepository());
 
         Map<String, Object> jsonMap = carService.mapFromFile("Car.json");
         Map<String, Object> xmlMap = carService.mapFromFile("Car.xml");
@@ -22,6 +23,9 @@ public class Main {
 
         System.out.println(carService.mapToObject.apply(jsonMap).toString());
         System.out.println(carService.mapToObject.apply(xmlMap).toString());
+
+        carService.createCar(CarType.CAR,3);
+        System.out.println(Arrays.toString(carService.getAll()));
 
 
     }

@@ -1,16 +1,20 @@
 package com.ozorkin.repository;
 
+import com.ozorkin.model.Car;
+
+import java.util.Optional;
+
 public interface Repository <T> {
-    void save(T t);
-
-    void delete(final String id);
-
-    void insert( int index, final T t);
+    void save(final T car);
 
     T[] getAll();
 
-    T getById(final String id);
+    Optional<Car> getById(final String id);
 
+    void delete(final String id);
 
 }
+
+
+
 

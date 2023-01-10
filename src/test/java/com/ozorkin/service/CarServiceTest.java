@@ -10,15 +10,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.Optional;
+
 class CarServiceTest {
     private CarService target;
     private CarRepository repository;
 
-    @BeforeEach
-    void setUp () {
-        repository = Mockito.mock(CarRepository.class);
-        target=new CarService(repository);
-    }
+//    @BeforeEach
+//    void setUp () {
+//        repository = Mockito.mock(CarRepository.class);
+//        target=new CarService(repository);
+//    }
 
     @Test
     void createCarWithRandomGenerator() {
@@ -53,14 +55,14 @@ class CarServiceTest {
     @Test
     void findIdIncorrectNullId() {
         String id = null;
-        final Car car = target.find(id);
+        final Optional<Car> car = target.find(id);
         Assertions.assertNull(car);
     }
 
     @Test
     void findIdIncorrectEmptyId() {
         String id = "";
-        final Car car = target.find(id);
+        final Optional<Car> car = target.find(id);
         Assertions.assertNull(car);
     }
 
@@ -68,7 +70,7 @@ class CarServiceTest {
     void findNotFound() {
         String id = "123";
         Mockito.when(repository.getById("123")).thenReturn(null);
-        final Car car = target.find(id);
+        final Optional<Car> car = target.find(id);
         Assertions.assertNull(car);
     }
 
@@ -76,8 +78,8 @@ class CarServiceTest {
     void find() {
         final Car expected = new PassengerCar();
         String id = "123";
-        Mockito.when(repository.getById("123")).thenReturn(expected);
-        final Car actual = target.find(id);
+        Mockito.when(repository.getById("123")).thenReturn(Optional.of(expected));
+        final Optional<Car> actual = target.find(id);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -86,25 +88,25 @@ class CarServiceTest {
         Assertions.assertDoesNotThrow(() -> target.getAll());
     }
 
-    @Test
-    void insert() {
-        final Car car = target.createCar(CarType.CAR);
-        final int index = 2;
-        Assertions.assertDoesNotThrow(() -> target.insert(index,car));
-    }
-
-    @Test
-    void insertOutOfBounds() {
-        final Car car = target.createCar(CarType.CAR);
-        final int index = -2;
-        Assertions.assertDoesNotThrow(() -> target.insert(index, car));
-    }
-    @Test
-    void insertNull() {
-        final Car car =null;
-        final int index = 0;
-        Assertions.assertDoesNotThrow(() -> target.insert(index, car));
-    }
+//    @Test
+//    void insert() {
+//        final Car car = target.createCar(CarType.CAR);
+//        final int index = 2;
+//        Assertions.assertDoesNotThrow(() -> target.insert(index,car));
+//    }
+//
+//    @Test
+//    void insertOutOfBounds() {
+//        final Car car = target.createCar(CarType.CAR);
+//        final int index = -2;
+//        Assertions.assertDoesNotThrow(() -> target.insert(index, car));
+//    }
+//    @Test
+//    void insertNull() {
+//        final Car car =null;
+//        final int index = 0;
+//        Assertions.assertDoesNotThrow(() -> target.insert(index, car));
+//    }
 
     @Test
     void delete() {
@@ -132,7 +134,7 @@ class CarServiceTest {
     @Test
     void changeRandomColorNullId() {
         String id = null;
-        final Car car = target.find(id);
+        final Optional<Car> car = target.find(id);
         Assertions.assertNull(car);
     }
 

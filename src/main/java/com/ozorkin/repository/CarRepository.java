@@ -3,7 +3,9 @@ package com.ozorkin.repository;
 import com.ozorkin.model.Car;
 import com.ozorkin.model.Color;
 
-public class CarRepository implements Repository<Car>{
+import java.util.Optional;
+
+public class CarRepository implements Repository<Car> {
 
     private static Car[] cars = new Car[10];
     private static CarRepository instance;
@@ -11,12 +13,15 @@ public class CarRepository implements Repository<Car>{
 
     public CarRepository() {
     }
+
     public static CarRepository getInstance() {
         if (instance == null) {
             instance = new CarRepository();
         }
         return instance;
     }
+
+    @Override
     public void save(final Car car) {
         final int index = putCar(car);
         if (index == cars.length) {
@@ -26,6 +31,7 @@ public class CarRepository implements Repository<Car>{
         }
     }
 
+    @Override
     public Car[] getAll() {
         final int newLength = foundLength();
         final Car[] newCars = new Car[newLength];
@@ -33,15 +39,17 @@ public class CarRepository implements Repository<Car>{
         return newCars;
     }
 
-    public Car getById(final String id) {
+    @Override
+    public Optional<Car> getById(final String id) {
         for (Car car : cars) {
             if (car.getId().equals(id)) {
-                return car;
+                return Optional.of(car);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
+    @Override
     public void delete(final String id) {
         int index = 0;
         for (; index < cars.length; index++) {
@@ -71,10 +79,7 @@ public class CarRepository implements Repository<Car>{
     }
 
     public void updateColor(final String id, final Color color) {
-        final Car car = getById(id);
-        if (car != null) {
-            car.setColor(color);
-        }
+        getById(id).ifPresent(car -> car.setColor(color));
     }
 
     private int foundLength() {
